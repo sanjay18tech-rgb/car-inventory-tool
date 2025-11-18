@@ -58,7 +58,7 @@ export default function RightPanel({ row, onUpdate, onSubmit, systemPrompt }) {
       }
 
       const numericYear = Number(value);
-      if (numericYear < 0) return;
+      if (numericYear < 0 || numericYear < 1900) return;
 
       setFormData((prev) => ({ ...prev, year: numericYear }));
       return;
