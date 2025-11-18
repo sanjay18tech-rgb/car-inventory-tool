@@ -15,6 +15,8 @@ export default function RightPanel({ row, onUpdate, onSubmit, systemPrompt }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const currentYear = new Date().getFullYear();
+
   useEffect(() => {
     if (row.status === "processed" || row.status === "submitting") {
       setFormData(row.aiData || initialFormState);
@@ -58,7 +60,7 @@ export default function RightPanel({ row, onUpdate, onSubmit, systemPrompt }) {
       }
 
       const numericYear = Number(value);
-      if (numericYear < 0 || numericYear < 1900) return;
+      if (numericYear < 1900 || numericYear > currentYear) return;
 
       setFormData((prev) => ({ ...prev, year: numericYear }));
       return;
@@ -68,14 +70,11 @@ export default function RightPanel({ row, onUpdate, onSubmit, systemPrompt }) {
   };
 
   const isFormDisabled = row.status === "processed" || row.status === "submitting";
-
   const statusOptions = ["New", "Used", "CPO"];
 
   return (
     <div>
-      <h2 className="text-xl font-bold text-gray-800 mb-4">
-        AI Processed Parameters
-      </h2>
+      <h2 className="text-xl font-bold text-gray-800 mb-4">AI Processed Parameters</h2>
 
       {isLoading && (
         <div className="flex items-center justify-center h-full min-h-[300px]">
@@ -141,9 +140,10 @@ export default function RightPanel({ row, onUpdate, onSubmit, systemPrompt }) {
                 value={formData.year}
                 onChange={handleChange}
                 disabled={isFormDisabled}
-                min="0"
-                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-100"
                 placeholder="-"
+                min="1900"
+                max={currentYear}
+                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-100"
               />
             </div>
 
@@ -192,8 +192,10 @@ export default function RightPanel({ row, onUpdate, onSubmit, systemPrompt }) {
               disabled={isFormDisabled}
               className="w-full inline-flex justify-center py-2 px-4 h-12 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-blue-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
-              {row.status === "submitting" ? "Submitting..."
-                : row.status === "processed" ? "Processed"
+              {row.status === "submitting"
+                ? "Submitting..."
+                : row.status === "processed"
+                ? "Processed"
                 : "Submit"}
             </button>
           </div>
