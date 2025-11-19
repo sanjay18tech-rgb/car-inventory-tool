@@ -19,6 +19,7 @@ export default function RightPanel({ row, onUpdate, onSubmit, systemPrompt }) {
 
   useEffect(() => {
     if (row.status === "processed" || row.status === "submitting") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData(row.aiData || initialFormState);
       return;
     }
