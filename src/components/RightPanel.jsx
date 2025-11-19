@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { parseCarDataWithAI } from "../services/ai";
 import Spinner from "./Spinner";
 
@@ -17,39 +17,47 @@ export default function RightPanel({ row, onUpdate, onSubmit, systemPrompt }) {
 
   const currentYear = new Date().getFullYear();
 
+  const processRow = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const result = await parseCarDataWithAI(row.data, systemPrompt);
+      setIsLoading(false);
+
+      if (result.error) {
+        setError(result.error);
+      } else {
+        const formattedResult = {
+          make: result.make || "",
+          model: result.model || "",
+          year: result.year || "",
+          color: result.color || "",
+          status: result.status || "",
+        };
+        setFormData(formattedResult);
+        onUpdate({ aiData: formattedResult });
+      }
+    } catch (err) {
+      setIsLoading(false);
+      setError(err.message || "Something went wrong. Please retry after some time.");
+    }
+  }, [row.data, systemPrompt, onUpdate]);
+
   useEffect(() => {
     if (row.status === "processed" || row.status === "submitting") {
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData(row.aiData || initialFormState);
+      setError(null);
       return;
     }
 
     if (row.aiData) {
       setFormData(row.aiData);
-    } else if (row.status === "pending") {
-      const processRow = async () => {
-        setIsLoading(true);
-        setError(null);
-        const result = await parseCarDataWithAI(row.data, systemPrompt);
-        setIsLoading(false);
-
-        if (result.error) {
-          setError(result.error);
-        } else {
-          const formattedResult = {
-            make: result.make || "",
-            model: result.model || "",
-            year: result.year || "",
-            color: result.color || "",
-            status: result.status || "",
-          };
-          setFormData(formattedResult);
-          onUpdate({ aiData: formattedResult });
-        }
-      };
+      setError(null);
+    } else if (row.status === "pending" && !row.aiData) {
       processRow();
     }
-  }, [row, onUpdate, systemPrompt]);
+  }, [row, processRow]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -73,6 +81,11 @@ export default function RightPanel({ row, onUpdate, onSubmit, systemPrompt }) {
   const isFormDisabled = row.status === "processed" || row.status === "submitting";
   const statusOptions = ["New", "Used", "CPO"];
 
+  const handleRetry = () => {
+    setError(null);
+    processRow();
+  };
+
   return (
     <div>
       <h2 className="text-xl font-bold text-gray-800 mb-4">AI Processed Parameters</h2>
@@ -85,8 +98,41 @@ export default function RightPanel({ row, onUpdate, onSubmit, systemPrompt }) {
       )}
 
       {error && !isLoading && (
-        <div className="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-100" role="alert">
-          <span className="font-medium">Error!</span> {error}
+        <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-center">
+          <div className="mb-6">
+            <svg
+              className="mx-auto h-16 w-16 text-red-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
+            </svg>
+          </div>
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">Something Went Wrong</h3>
+          <p className="text-gray-600 mb-4 max-w-md">
+          The AI service is currently overloaded. Please try again in a few moments.
+          </p>
+          <button
+            onClick={handleRetry}
+            disabled={isLoading}
+            className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+          >
+            {isLoading ? (
+              <>
+                <Spinner />
+                <span className="ml-2">Retrying...</span>
+              </>
+            ) : (
+              "Retry"
+            )}
+          </button>
         </div>
       )}
 
