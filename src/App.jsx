@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { v4 as uuid } from "uuid";
 import UploadScreen from "./components/UploadScreen";
 import ProcessingScreen from "./components/ProcessingScreen";
 import Papa from "papaparse";
@@ -6,14 +7,13 @@ import Papa from "papaparse";
 export default function App() {
   const [rows, setRows] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
-
   const handleFileUpload = (file) => {
     Papa.parse(file, {
       complete: (results) => {
         const parsedRows = results.data
           .filter((row) => row.some((cell) => cell.trim() !== ""))
           .map((row, index) => ({
-            id: index,
+            id: uuid(),
             raw: JSON.stringify(
               {
                 row: index + 1,

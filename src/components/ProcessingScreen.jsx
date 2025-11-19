@@ -53,7 +53,6 @@ export default function ProcessingScreen({ initialRows }) {
   };
 
   const handleKeyDown = useCallback(
-    // eslint-disable-next-line react-hooks/preserve-manual-memoization
     (e) => {
       if (e.key === "ArrowRight") {
         navigate(1);
@@ -61,7 +60,7 @@ export default function ProcessingScreen({ initialRows }) {
         navigate(-1);
       }
     },
-    [rows.length]
+    [navigate]
   );
 
   useEffect(() => {

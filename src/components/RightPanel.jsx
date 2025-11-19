@@ -11,7 +11,7 @@ const initialFormState = {
 };
 
 export default function RightPanel({ row, onUpdate, onSubmit, systemPrompt }) {
-  const [formData, setFormData] = useState(initialFormState);
+  const [formData, setFormData] = useState(() => row.aiData || initialFormState);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -43,20 +43,14 @@ export default function RightPanel({ row, onUpdate, onSubmit, systemPrompt }) {
   }, [row.data, systemPrompt, onUpdate]);
 
   useEffect(() => {
-    if (row.status === "processed" || row.status === "submitting") {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setFormData(row.aiData || initialFormState);
-      setError(null);
-      return;
-    }
+    if (row.status === "pending" && !row.aiData) {
+      const timeoutId = setTimeout(() => {
+        processRow();
+      }, 0);
 
-    if (row.aiData) {
-      setFormData(row.aiData);
-      setError(null);
-    } else if (row.status === "pending" && !row.aiData) {
-      processRow();
+      return () => clearTimeout(timeoutId);
     }
-  }, [row, processRow]);
+  }, [row.status, row.aiData, processRow]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

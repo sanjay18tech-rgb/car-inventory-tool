@@ -10,7 +10,7 @@ You are an AI that parses a single CSV row into a JSON object.
 Rules:
 - Respond with ONLY valid JSON.
 - Do NOT wrap in \`\`\`.
-- Include keys: make, model, year, color, status, price if possible.
+- Include keys: make, model, year, color, status and price if possible.
 
 Row data: "${rowText}"
   `;
