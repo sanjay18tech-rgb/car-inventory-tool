@@ -1,6 +1,27 @@
 ## Car Inventory AI Assistant
 
+## Project Overview
 An AI-assisted workflow that turns noisy CSV exports of vehicle listings into structured, reviewable inventory records. Upload a CSV, let the Groq-powered parser suggest make/model/year/color/status, then review, tweak, and submit each row with keyboard-friendly navigation.
+
+## Run Locally
+1. **Install dependencies**
+   ```bash
+   npm install
+   ```
+2. **Configure your environment**
+   - Copy `.env.example` to `.env` (create one if it does not exist).
+   - Set `VITE_GROQ_API_KEY=<your_groq_key>` so `/src/services/ai.js` can call the Groq API.
+3. **Start the dev server**
+   ```bash
+   npm run dev
+   ```
+   Vite will print the local URL (typically `http://localhost:5173`).
+
+## Configure the AI API Key
+1. Create a Groq account and generate a key with access to the `llama-3.1-8b-instant` model (or whichever model you configure in `src/services/ai.js`).
+2. Store the key in `.env` as `VITE_GROQ_API_KEY=<your_key>`. Never commit this file.
+3. Restart `npm run dev` so Vite re-reads the environment variable.
+4. If you redeploy, make sure the hosting provider also has the same environment variable configured.
 
 ### Features
 - **CSV ingest** via `Papa.parse` with automatic skipping of empty rows.
@@ -16,19 +37,14 @@ An AI-assisted workflow that turns noisy CSV exports of vehicle listings into st
 - Lucide icons
 - Groq Chat Completions API
 
-### Getting Started
-1. **Install dependencies**
-   ```bash
-   npm install
-   ```
-2. **Configure environment**
-   - Copy `.env.example` to `.env` (create one if it does not exist).
-   - Set `VITE_GROQ_API_KEY=<your_groq_key>` so `/src/services/ai.js` can call the Groq API.
-3. **Run the app**
-   ```bash
-   npm run dev
-   ```
-   Vite will print the local URL (typically `http://localhost:5173`).
+## Assumptions
+- CSV files contain at least one column with enough textual context for the AI to infer make/model/year/status.
+- Operators validate every row before submitting; there is no automatic “bulk accept”.
+- A single Groq API key is sufficient for the expected traffic volume; throttle/queueing is not implemented.
+- No backend persistence layer is included—accepted records are expected to be exported or integrated elsewhere.
+
+## Deployed URL
+- Public deployment: 'https://car-inventory-tool.vercel.app/'.
 
 ### Usage Flow
 1. Prepare a `.csv` with each row describing a vehicle (columns/order do not matter; the raw row string is passed to the AI).
