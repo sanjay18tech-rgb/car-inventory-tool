@@ -1,16 +1,75 @@
-# React + Vite
+## Car Inventory AI Assistant
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An AI-assisted workflow that turns noisy CSV exports of vehicle listings into structured, reviewable inventory records. Upload a CSV, let the Groq-powered parser suggest make/model/year/color/status, then review, tweak, and submit each row with keyboard-friendly navigation.
 
-Currently, two official plugins are available:
+### Features
+- **CSV ingest** via `Papa.parse` with automatic skipping of empty rows.
+- **AI extraction** powered by Groq `llama-3.1-8b-instant`, enforcing JSON-only responses.
+- **Human-in-the-loop** review panel with validation (year range, allowed statuses) and submit workflow.
+- **Prompt customization** through the Configure AI modal so operators can steer the extraction rules per campaign.
+- **Keyboard navigation** (← →) and status badges to keep large queues moving quickly.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Tech Stack
+- React 19 + Vite 7 + SWC
+- TailwindCSS for layout/styling
+- PapaParse for CSV handling
+- Lucide icons
+- Groq Chat Completions API
 
-## React Compiler
+### Getting Started
+1. **Install dependencies**
+   ```bash
+   npm install
+   ```
+2. **Configure environment**
+   - Copy `.env.example` to `.env` (create one if it does not exist).
+   - Set `VITE_GROQ_API_KEY=<your_groq_key>` so `/src/services/ai.js` can call the Groq API.
+3. **Run the app**
+   ```bash
+   npm run dev
+   ```
+   Vite will print the local URL (typically `http://localhost:5173`).
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+### Usage Flow
+1. Prepare a `.csv` with each row describing a vehicle (columns/order do not matter; the raw row string is passed to the AI).
+2. Launch the dev server and use the landing screen to upload the CSV.
+3. The processing dashboard loads:
+   - **Left panel** shows the raw row JSON plus navigation controls.
+   - **Right panel** displays AI-suggested fields, editable inputs, and a submit button. Rows move from `pending → submitting → processed`.
+4. Need different extraction rules? Open **Configure AI** (top-right) and edit the system prompt; the new prompt applies to subsequent AI calls.
+5. Retry failed AI calls with the **Retry** button, or manually fill the form and submit.
 
-## Expanding the ESLint configuration
+### Project Structure (selected files)
+```
+src/
+  App.jsx                # Entry: upload vs processing screens
+  components/
+    UploadScreen.jsx     # Landing/upload UI
+    ProcessingScreen.jsx # Orchestrates left/right panels & modal
+    LeftPanel.jsx        # Raw row viewer + navigation
+    RightPanel.jsx       # Handles AI fetch, form state, submission
+    ConfigureAIModal.jsx # Prompt editor persisted in state
+  services/
+    ai.js                # Groq API client + JSON safety checks
+public/
+  vite.svg               # Static assets served by Vite
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Available Scripts
+- `npm run dev` – Vite dev server with hot reload.
+- `npm run build` – Production build into `dist/`.
+- `npm run preview` – Preview the production bundle.
+- `npm run lint` – ESLint (React, Hooks, Refresh plugins).
+
+### Environment & Security Notes
+- Never commit `.env` files; they contain your Groq key.
+- Groq API calls run client-side; rotate keys regularly or proxy through a backend if stricter security is required.
+- The form limits `year` to `1900…currentYear` and status to `New | Used | CPO` by default, but you can extend these options.
+
+### Sample Data
+A sample `car_listings.csv` is included at the repo root so you can try the flow immediately. Feel free to replace it with real dealership exports.
+
+---
+
+Questions or ideas? Open an issue or reach out to the team!
+
