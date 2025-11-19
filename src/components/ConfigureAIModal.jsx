@@ -44,7 +44,6 @@ export default function ConfigureAIModal({ isOpen, onClose, prompt, onSave }) {
             onChange={(e) => setCurrentPrompt(e.target.value)}
           ></textarea>
         </div>
-
         <p className="text-xs text-gray-500 mt-2">
           This is a demo. Saving the prompt will affect the AI's behavior for
           subsequent requests.

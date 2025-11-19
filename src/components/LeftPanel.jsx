@@ -42,7 +42,6 @@ export default function LeftPanel({
           {currentRow.raw}
         </pre>
       </div>
-      
     </div>
   );
 }

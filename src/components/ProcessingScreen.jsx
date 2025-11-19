@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import LeftPanel from "./LeftPanel";
 import RightPanel from "./RightPanel";
 import ConfigureAIModal from "./ConfigureAIModal";
-import {Cog} from "lucide-react";
+import { Cog } from "lucide-react";
 
 const DEFAULT_PROMPT = `You are an AI assistant. Given the raw text from a CSV row, your task is to parse the following fields:
 1.  **make**: The car manufacturer (e.g., "Honda", "Toyota").
@@ -84,21 +84,21 @@ export default function ProcessingScreen({ initialRows }) {
           Configure AI
         </button>
         <div className="bg-gray-100 p-6 rounded-md" >
-        <LeftPanel
-          currentRow={currentRow}
-          totalRows={rows.length}
-          onNavigate={navigate}
-          currentIndex={currentRowIndex}
-        />
+          <LeftPanel
+            currentRow={currentRow}
+            totalRows={rows.length}
+            onNavigate={navigate}
+            currentIndex={currentRowIndex}
+          />
         </div>
         <div className="p-6">
-        <RightPanel
-          key={currentRow.id}
-          row={currentRow}
-          onUpdate={(updates) => handleRowUpdate(currentRowIndex, updates)}
-          onSubmit={(formData) => handleSubmit(currentRowIndex, formData)}
-          systemPrompt={systemPrompt}
-        />
+          <RightPanel
+            key={currentRow.id}
+            row={currentRow}
+            onUpdate={(updates) => handleRowUpdate(currentRowIndex, updates)}
+            onSubmit={(formData) => handleSubmit(currentRowIndex, formData)}
+            systemPrompt={systemPrompt}
+          />
         </div>
       </div>
       <ConfigureAIModal

@@ -23,7 +23,6 @@ export default function RightPanel({ row, onUpdate, onSubmit, systemPrompt }) {
     try {
       const result = await parseCarDataWithAI(row.data, systemPrompt);
       setIsLoading(false);
-
       if (result.error) {
         setError(result.error);
       } else {
@@ -70,7 +69,6 @@ export default function RightPanel({ row, onUpdate, onSubmit, systemPrompt }) {
 
       const numericYear = Number(value);
       if (numericYear < 1900 || numericYear > currentYear) return;
-
       setFormData((prev) => ({ ...prev, year: numericYear }));
       return;
     }
@@ -89,7 +87,7 @@ export default function RightPanel({ row, onUpdate, onSubmit, systemPrompt }) {
   return (
     <div>
       <h2 className="text-xl font-bold text-gray-800 mb-4">AI Processed Parameters</h2>
-
+      
       {isLoading && (
         <div className="flex items-center justify-center h-full min-h-[300px]">
           <Spinner />
@@ -117,7 +115,7 @@ export default function RightPanel({ row, onUpdate, onSubmit, systemPrompt }) {
           </div>
           <h3 className="text-xl font-semibold text-gray-900 mb-2">Something Went Wrong</h3>
           <p className="text-gray-600 mb-4 max-w-md">
-          The AI service is currently overloaded. Please try again in a few moments.
+            The AI service is busy right now. Please try again in a few moments.
           </p>
           <button
             onClick={handleRetry}
@@ -242,8 +240,8 @@ export default function RightPanel({ row, onUpdate, onSubmit, systemPrompt }) {
               {row.status === "submitting"
                 ? "Submitting..."
                 : row.status === "processed"
-                ? "Processed"
-                : "Submit"}
+                  ? "Processed"
+                  : "Submit"}
             </button>
           </div>
         </form>

@@ -32,27 +32,21 @@ Row data: "${rowText}"
       }),
     });
 
-   
     if (!response.ok) {
       const errorText = await response.text().catch(() => "Unknown error");
       throw new Error(`HTTP ${response.status}: ${errorText}`);
     }
 
-    
     const responseText = await response.text();
-    
-    
     if (!responseText || responseText.trim() === "") {
       throw new Error("Empty response from API");
     }
 
-   
     const contentType = response.headers.get("content-type") || "";
     if (!contentType.includes("application/json")) {
       console.error("Non-JSON response received:", responseText);
       throw new Error(`Expected JSON but got ${contentType}. Response: ${responseText.substring(0, 200)}`);
     }
-
     
     let data;
     try {
@@ -65,7 +59,6 @@ Row data: "${rowText}"
     console.log("Groq raw response:", data);
 
     if (data.error) {
-     
       throw new Error(data.error.message || "Groq API error");
     }
 
@@ -76,4 +69,3 @@ Row data: "${rowText}"
     return { error: error.message || "Failed to parse Groq AI response" };
   }
 };
-
